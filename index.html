@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horror Escape</title>
+    <style>
+        body {
+            background: url('https://i.imgur.com/3Z3eYhZ.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            transition: background 1s ease-in-out;
+        }
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        #player {
+            width: 50px;
+            height: 50px;
+            background: url('https://i.imgur.com/character.png') no-repeat center;
+            background-size: cover;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.8);
+            transition: transform 0.1s;
+        }
+        #joystick {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: none;
+        }
+        .shadow {
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.9);
+            position: absolute;
+            top: 80px;
+            left: 80px;
+            border-radius: 50%;
+            animation: flicker 0.8s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        .blood-stain {
+            width: 100px;
+            height: 50px;
+            background: url('https://i.imgur.com/jLk8XEj.png');
+            position: absolute;
+            top: 200px;
+            left: 300px;
+            opacity: 0.7;
+        }
+        #intro-text {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 20px;
+            text-align: center;
+            animation: fadeOut 60s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="intro-text">A school bus crashes, leaving eight kids and the driver dead. A cloaked man whispers: "The best ones may be alive in some sort of yellow place..."</div>
+        <div id="player"></div>
+        <div class="shadow"></div>
+        <div class="blood-stain"></div>
+        <div id="joystick"></div>
+    </div>
+    <script>
+        let player = document.getElementById("player");
+        let posX = window.innerWidth / 2;
+        let posY = window.innerHeight / 2;
+        let speed = 5;
+
+        function movePlayer(dx, dy) {
+            posX += dx * speed;
+            posY += dy * speed;
+            player.style.left = posX + "px";
+            player.style.top = posY + "px";
+            player.style.transform = `translate(-50%, -50%) scale(${1 + Math.random() * 0.1})`;
+        }
+
+        document.addEventListener("keydown", function(event) {
+            switch(event.key) {
+                case "w": movePlayer(0, -1); break;
+                case "s": movePlayer(0, 1); break;
+                case "a": movePlayer(-1, 0); break;
+                case "d": movePlayer(1, 0); break;
+            }
+        });
+
+        function detectScaryEvent() {
+            if (posX < 150 && posY < 150) {
+                document.body.style.background = "url('https://i.imgur.com/5jvU7of.jpg') no-repeat center center fixed";
+                document.body.style.backgroundSize = "cover";
+                alert("A dark figure suddenly appears! Your heart races!");
+            }
+        }
+        setInterval(detectScaryEvent, 500);
+
+        // Mobile Joystick Setup
+        let joystick = document.getElementById("joystick");
+        if ('ontouchstart' in window) {
+            joystick.style.display = "block";
+            joystick.addEventListener("touchmove", function(event) {
+                let touch = event.touches[0];
+                let dx = (touch.clientX - joystick.offsetLeft - 40) / 40;
+                let dy = (touch.clientY - joystick.offsetTop - 40) / 40;
+                movePlayer(dx, dy);
+            });
+        }
+    </script>
+</body>
+</html>
